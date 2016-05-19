@@ -1,12 +1,17 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/CronSchedule.php';
 
-class CronLoader
+class CronTable
 {
 	protected $entries = array();
 
-	public static function make(){
-		return new static();
+	public function __construct(array $entries=array()){
+		if(!empty($entries)) $this->entries = $entries;
+	}
+
+	public static function make(array $entries=array()){
+		return new static($entries);
 	}
 
 	public function getEntries(){
@@ -29,5 +34,25 @@ class CronLoader
 		} else {
 			// error opening the file.
 		}
+	}
+
+	public function findEntriesStartedBetween($end, $begin){
+		$schedule = new CronSchedule();
+		foreach($this->getEntries() as $entry){
+			if ($entry->isParsed()) {
+				echo $entry->getRaw()."\n";
+				echo $entry->getCommand()."\n";
+				echo $entry->getOutput()."\n";
+				echo $entry->getScript()."\n";
+				echo $entry->getLog()."\n";
+				
+				$interval = $entry->getRunInterval();
+				if($interval > 1200){
+					$schedule = $entry->getRunDatesUntil($end, $begin);
+					if(!empty($schedule)) $entries[] = $entry;
+				}
+			}
+		}
+		return $entries;
 	}
 }

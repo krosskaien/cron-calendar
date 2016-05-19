@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/CronExpressionExtended.php';
 
 class CronEntry
 {
@@ -8,6 +9,7 @@ class CronEntry
 	protected $command = '';
 	protected $output = '';
 	protected $parsed = false;
+	protected $schedule = array();
 	protected $errors = array();
 
 	public function __construct($str=''){
@@ -22,7 +24,7 @@ class CronEntry
 		if(preg_match("/^([^\s]+ [^\s]+ [^\s]+ [^\s]+ [^\s]+ )(.*)$/", $this->raw, $matches) == 1){			
 			if(is_array($matches) && count($matches) == 3){
 				try{					
-					$this->expression = Cron\CronExpression::factory($matches[1]);
+					$this->expression = CronExpressionExtended::factory($matches[1]);
 					$this->parsed = true;			
 				}
 				catch(InvalidArgumentException $e){
@@ -125,5 +127,9 @@ class CronEntry
 		if(empty($schedule) || !is_array($schedule) || count($schedule) != 2) return;
 
 		return strtotime($schedule[1]->format('Y-m-d H:i:s')) - strtotime($schedule[0]->format('Y-m-d H:i:s'));
+	}
+
+	public function getRunDatesUntil($endTime, $currentTime = null, $invert = false, $allowCurrentDate = false){
+		
 	}
 }

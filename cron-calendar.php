@@ -9,10 +9,10 @@ if (php_sapi_name() != 'cli') {
   throw new Exception('This application must be run on the command line.');
 }
 
-$repo = CronEntryCalendarRepository::make('primary');
+// $repo = CronEntryCalendarRepository::make('primary');
 $cron = CronLoader::make();
 $cron->loadFromFile('cron.dump');
-$count = 0;
+
 foreach($cron->getEntries() as $entry){
 	if ($entry->isParsed()) {
 		echo $entry->getRaw()."\n";
@@ -20,13 +20,14 @@ foreach($cron->getEntries() as $entry){
 		echo $entry->getOutput()."\n";
 		echo $entry->getScript()."\n";
 		echo $entry->getLog()."\n";
-		/*
+
+		
 		$interval = $entry->getRunInterval();
-		if($interval > 1200){
-			$count++;
-			$repo->add($entry);
+		if($interval > 1200){			
+			$matches = $entry->getExpression()->getRunDatesUntil('now');
+			print_r($matches);
+			// $repo->add($entry);
 		}
-		*/
 		echo "\n\n";
 	}
 }

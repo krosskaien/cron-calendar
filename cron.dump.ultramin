@@ -1,0 +1,1 @@
+0 */2 * * * /var/www/okazje/devel/updateRedirectionStats.sh >> /var/www/okazje-logs/redirection.log

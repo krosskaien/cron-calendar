@@ -10,7 +10,7 @@ if (php_sapi_name() != 'cli') {
 }
 
 // $repo = CronEntryCalendarRepository::make('primary');
-$cron = CronLoader::make();
+$cron = CronTable::make();
 $cron->loadFromFile('cron.dump');
 
 foreach($cron->getEntries() as $entry){
@@ -23,9 +23,7 @@ foreach($cron->getEntries() as $entry){
 
 		
 		$interval = $entry->getRunInterval();
-		if($interval > 1200){			
-			$matches = $entry->getExpression()->getRunDatesUntil('now');
-			print_r($matches);
+		if($interval > 1200){
 			// $repo->add($entry);
 		}
 		echo "\n\n";

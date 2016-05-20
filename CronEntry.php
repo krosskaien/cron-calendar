@@ -17,6 +17,10 @@ class CronEntry
 		$this->parse();
 	}
 
+	public static function make($str=''){
+		return new static($str);
+	}
+
 	private function parse(){
 		// przyadłoby się coś lepszego
 		if($this->isEmpty() || $this->isComment() || $this->isVariable()) return;
@@ -94,6 +98,10 @@ class CronEntry
 		return $log;
 	}
 
+	public function getHash(){
+		return md5($this->raw);
+	}
+
 	private function clean($str=''){
 		return trim(mb_ereg_replace("\s+", " ", $str));		
 	}
@@ -130,6 +138,6 @@ class CronEntry
 	}
 
 	public function getRunDatesUntil($endTime, $currentTime = null, $invert = false, $allowCurrentDate = false){
-		
+		return $this->getExpression()->getRunDatesUntil($endTime, $currentTime, $invert, $allowCurrentDate);
 	}
 }

@@ -7,7 +7,7 @@ class CronExpressionExtended extends \Cron\CronExpression
 		parent::__construct($expression, $fieldFactory);
 	}
 
-	public function getRunDatesUntil($endTime, $currentTime = null, $invert = false, $allowCurrentDate = false)
+	public function getRunDatesUntil($endTime, $currentTime = '', $invert = false, $allowCurrentDate = false)
     {
     	$endTime = new DateTime($endTime);
     	$count = 0;

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
-require_once __DIR__ . '/CronSchedule.php';
+require_once __DIR__ . '/Schedule.php';
+require_once __DIR__ . '/ScheduleEvent.php';
 
 class CronTable
 {
@@ -19,8 +20,8 @@ class CronTable
 	}
 
 	public function addEntry($str=''){
-		$entry = new CronEntry($str);
-		if(!$entry->isEmpty()) $this->entries[] = $entry;
+		$entry = CronEntry::make($str);
+		if(!$entry->isEmpty()) $this->entries[$entry->getHash()] = $entry;
 	}
 
 	public function loadFromFile($path=''){
@@ -36,23 +37,28 @@ class CronTable
 		}
 	}
 
-	public function findEntriesStartedBetween($end, $begin){
-		$schedule = new CronSchedule();
+	public function findEntriesStartedBetween($end, $begin=''){
+		$schedule = Schedule::make();
 		foreach($this->getEntries() as $entry){
 			if ($entry->isParsed()) {
-				echo $entry->getRaw()."\n";
-				echo $entry->getCommand()."\n";
-				echo $entry->getOutput()."\n";
-				echo $entry->getScript()."\n";
-				echo $entry->getLog()."\n";
 				
 				$interval = $entry->getRunInterval();
 				if($interval > 1200){
-					$schedule = $entry->getRunDatesUntil($end, $begin);
-					if(!empty($schedule)) $entries[] = $entry;
+					$matches = $entry->getRunDatesUntil($end, $begin);					
+					if(!empty($matches)){
+						while($match = array_pop($matches)){
+							$event = ScheduleEvent::make();
+							$event->setStart($match);
+							$event->setLocation('biuro');
+							$event->setSummary($entry->getScript());
+							$event->setDescription($entry->getRaw());
+							$event->addAttachment($entry);
+							$schedule->addEvent($event);
+						}
+					}
 				}
 			}
 		}
-		return $entries;
+		return $schedule;
 	}
 }
